@@ -1,0 +1,38 @@
+{
+  "name": "fuels-crowdfunding-platform-frontend",
+  "private": true,
+  "version": "0.0.1",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "lint": "eslint .",
+    "preview": "vite preview",
+    "abi:sync": "forc build -p ../contract && fuels build"
+  },
+  "dependencies": {
+    "@fuels/connectors": "^0.43.2",
+    "@fuels/react": "^0.43.2",
+    "@tanstack/react-query": "^5.85.9",
+    "fuels": "^0.101.1",
+    "react": "^19.1.1",
+    "react-dom": "^19.1.1"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.33.0",
+    "@types/react": "^19.1.10",
+    "@types/react-dom": "^19.1.7",
+    "@vitejs/plugin-react": "^5.0.0",
+    "eslint": "^9.33.0",
+    "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-react-refresh": "^0.4.20",
+    "globals": "^16.3.0",
+    "typescript": "~5.8.3",
+    "typescript-eslint": "^8.39.1",
+    "vite": "^7.1.2"
+  },
+  "overrides": {
+    "viem": "2.37.2",
+    "@wagmi/core": "2.20.3"
+  }
+}
