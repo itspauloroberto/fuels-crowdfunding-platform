@@ -45,7 +45,7 @@ export const styles = {
   },
   button: {
     borderRadius: "8px",
-    margin: "24px 0px",
+    margin: "0 auto",
     backgroundColor: "#707070",
     fontSize: "16px",
     color: "#ffffffec",

@@ -1,20 +1,21 @@
-Fuels Crowdfunding Platform
+# Fuel Powered Crowdfunding Platform
 
 # Overview
-- Sway smart contract implementing simple crowdfunding campaigns (create-only MVP).
-- React + Fuels frontend to create a campaign and view the created id.
+- Sway smart contract implementing simple crowdfunding campaigns.
+  - Create campaigns, list campaigns, access a campaign and contribute to campaign.
+- React + Vite + Fuels frontend to link to the smart contract and use the crowdfunding platform on the browser UI.
 - Targets Fuel Testnet; uses Fuels TypeScript SDK for wallet connectivity and bindings.
 
 ## Repo Structure
-- `contract/`: Sway contract and tests.
-- `frontend/`: React app wired to the deployed contract.
+- `contract/`: Sway contract and cargo tests.
+- `frontend/`: React web app wired to the deployed contract and auto generated sway-api.
 
 ## Prerequisites
-- Fuel toolchain: install via `fuelup` (includes `forc` and friends).
+- Fuel toolchain: install via `fuelup` (includes `forc` and his friends).
   - Install: `curl https://install.fuel.network | sh` (then follow prompts)
   - Verify: `forc --version`
 - Node.js 18+ and npm.
-- Git.
+- Git :P
 - Fuel Wallet browser extension (recommended) or a CLI-generated private key for deployments.
 
 ## How to run it?
@@ -27,6 +28,9 @@ Option A — Browser wallet (recommended for interacting with the dApp)
 Option B — CLI private key (for deploys via CLI)
 - Ensure you have a private key. If you don’t have one, you can generate with any secure method you prefer. Export it as env var when deploying: `export PRIVATE_KEY=0x...`
 - Fund the corresponding address on Testnet via the faucet (see below).
+
+2) Create a local wallet
+- https://docs.fuel.network/guides/contract-quickstart/#setting-up-a-local-wallet
 
 2) Get Testnet Funds
 - Faucet: https://faucet-testnet.fuel.network/
@@ -43,6 +47,7 @@ Option A — Using forc (recommended)
 - `cd contract`
 - `forc build`
 - `forc deploy --testnet`
+- You will be asked to inform your local wallet password and choose the account
 - Save the printed Contract ID (0x...) to use on Step 6)
 
 Option B — Using Fuels CLI (uses the provided `frontend/fuels.config.ts`)
@@ -51,22 +56,25 @@ Option B — Using Fuels CLI (uses the provided `frontend/fuels.config.ts`)
 - `npx fuels deploy`
 - Save the printed Contract ID (0x...) to use on Step 6)
 
-5) Sync Frontend Bindings (TypeScript `sway-api`)
+5) Install Frontend Dependencies
+- `cd frontend`
+- `npm ci` (or `npm install`)
+
+6) Sync Frontend Bindings (TypeScript `sway-api`)
 - The frontend provides a script to build the contract and regenerate bindings via Fuels CLI:
 - From repo root: `cd frontend`
 - Run: `npm run abi:sync`
   - Internally runs: `forc build -p ../contract && fuels build`
   - Outputs TypeScript bindings to `frontend/src/sway-api/`.
 
-6) Configure Frontend Environment
+7) Configure Frontend Environment
 - In `frontend/`, create `.env` (or `.env.local`) and set:
 - `VITE_CONTRACT_ID=0xYOUR_DEPLOYED_CONTRACT_ID`
 
-7) Install Frontend Dependencies and Run
+8) Run the frontend application
 - `cd frontend`
-- `npm ci` (or `npm install`)
 - `npm run dev`
-- Open the printed local URL; connect your Fuel wallet.
+- Open the printed local URL; Open it in the browser and it will connect your Fuel wallet.
 
 # Using the Application
 

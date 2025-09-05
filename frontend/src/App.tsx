@@ -1,5 +1,5 @@
 import { useConnectUI, useIsConnected, useWallet } from "@fuels/react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, Navigate, Route, Routes } from "react-router-dom";
 import { styles } from "./styles";
 import CreateCampaign from "./pages/CreateCampaign";
@@ -12,80 +12,86 @@ export default function App() {
 	const { wallet } = useWallet();
 	const [menuOpen, setMenuOpen] = useState(false);
 
+	useEffect(() => {
+		if (!isConnected) setMenuOpen(false);
+	}, [isConnected]);
+
 	return (
 		<div style={styles.root}>
 			<div style={styles.container}>
 				{/* Main menu */}
-				<div style={styles.menuBar}>
-					<div style={{ position: "relative" }}>
-						<button
-							style={{
-								...styles.link,
-								cursor: "pointer",
-								border: "none",
-								width: 210,
-							}}
-							onClick={() => setMenuOpen((o) => !o)}
-						>
-							<span>Main Menu</span>
-							<span
+				{isConnected && (
+					<div style={styles.menuBar}>
+						<div style={{ position: "relative" }}>
+							<button
 								style={{
-									right: 10,
-									position: "absolute",
-									top: menuOpen ? 9 : -5,
-									fontSize: 26,
-									transform: menuOpen ? "rotate(180deg)" : "none",
+									...styles.link,
+									cursor: "pointer",
+									border: "none",
+									width: 210,
 								}}
+								onClick={() => setMenuOpen((o) => !o)}
 							>
-								{" "}
-								⌄
-							</span>
-						</button>
-						{menuOpen && (
-							<div
-								style={{
-									position: "absolute",
-									top: "110%",
-									left: 0,
-									background: "#1a1a1a",
-									border: "1px solid #333",
-									borderRadius: 8,
-									minWidth: 200,
-									boxShadow: "0 8px 24px rgba(0,0,0,0.35)",
-									padding: 6,
-									zIndex: 20,
-								}}
-							>
-								<Link
-									to="/campaigns"
-									onClick={() => setMenuOpen(false)}
+								<span>Main Menu</span>
+								<span
 									style={{
-										display: "block",
-										color: "#fff",
-										textDecoration: "none",
-										padding: "8px 10px",
-										borderRadius: 6,
+										right: 10,
+										position: "absolute",
+										top: menuOpen ? 9 : -5,
+										fontSize: 26,
+										transform: menuOpen ? "rotate(180deg)" : "none",
 									}}
 								>
-									Show all campaigns
-								</Link>
-								<Link
-									to="/campaign/create"
-									onClick={() => setMenuOpen(false)}
+									{" "}
+									⌄
+								</span>
+							</button>
+							{menuOpen && (
+								<div
 									style={{
-										display: "block",
-										color: "#fff",
-										textDecoration: "none",
-										padding: "8px 10px",
-										borderRadius: 6,
+										position: "absolute",
+										top: "110%",
+										left: 0,
+										background: "#1a1a1a",
+										border: "1px solid #333",
+										borderRadius: 8,
+										minWidth: 200,
+										boxShadow: "0 8px 24px rgba(0,0,0,0.35)",
+										padding: 6,
+										zIndex: 20,
 									}}
 								>
-									Create new campaign
-								</Link>
-							</div>
-						)}
+									<Link
+										to="/campaigns"
+										onClick={() => setMenuOpen(false)}
+										style={{
+											display: "block",
+											color: "#fff",
+											textDecoration: "none",
+											padding: "8px 10px",
+											borderRadius: 6,
+										}}
+									>
+										Show all campaigns
+									</Link>
+									<Link
+										to="/campaign/create"
+										onClick={() => setMenuOpen(false)}
+										style={{
+											display: "block",
+											color: "#fff",
+											textDecoration: "none",
+											padding: "8px 10px",
+											borderRadius: 6,
+										}}
+									>
+										Create new campaign
+									</Link>
+								</div>
+							)}
+						</div>
 					</div>
-				</div>
+				)}
 
 				{/* Header */}
 				<header style={{ ...styles.header, justifyContent: "flex-end" } as any}>
