@@ -95,7 +95,7 @@ export default function CampaignContributeDialog({
 								setAmount(v);
 							}}
 							style={{
-								width: "100%",
+								width: "calc(100% - 24px)",
 								borderRadius: 8,
 								border: "1px solid #333",
 								background: "#1a1a1a",

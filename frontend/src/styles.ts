@@ -57,7 +57,7 @@ export const styles = {
   },
   input: {
     marginTop: "8px",
-    marginBottom: "16px",
+    marginBottom: "0px",
     height: "40px",
     borderRadius: "6px",
     padding: "0 0.5rem",

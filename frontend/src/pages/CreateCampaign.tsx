@@ -1,10 +1,13 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useBalance, useIsConnected, useWallet } from "@fuels/react";
 import { Contract } from "../sway-api";
 import { CONTRACT_ID } from "../config";
 import { styles } from "../styles";
+import { bn } from "fuels";
 
 export function CreateCampaign() {
+	const navigate = useNavigate();
 	const [contract, setContract] = useState<Contract>();
 	const [targetGoal, setTargetGoal] = useState<string>("");
 	const [deadline, setDeadline] = useState<string>(""); // yyyy-mm-dd
@@ -13,6 +16,14 @@ export function CreateCampaign() {
 	const { isConnected } = useIsConnected();
 	const { wallet } = useWallet();
 	const { balance } = useBalance({ address: wallet?.address.toAddress() });
+
+	// Fuel base asset commonly uses 9 decimals.
+	const BASE_DECIMALS = 9;
+
+	const formattedGoal = useMemo(() => {
+		const safe = /^\d+$/.test(targetGoal) ? targetGoal : "0";
+		return bn(safe).formatUnits(BASE_DECIMALS);
+	}, [targetGoal]);
 
 	useEffect(() => {
 		if (isConnected && wallet) {
@@ -41,6 +52,8 @@ export function CreateCampaign() {
 			const { value } = await call.waitForResult();
 			setCreatedId(value.toNumber());
 			clearForm();
+			// Redirect to campaign list after successful creation
+			navigate("/campaigns");
 		} catch (error) {
 			console.error(error);
 			alert("Failed to create campaign. Check console for details.");
@@ -58,20 +71,32 @@ export function CreateCampaign() {
 			<h3 style={styles.label}>Create Campaign</h3>
 
 			<label>
-				Target Goal (u64)
+				Target Goal (base units, u64)
 				<input
 					type="number"
+					inputMode="numeric"
 					min="0"
+					step={1}
+					placeholder="e.g. 1000"
 					value={targetGoal}
-					onChange={(e) => setTargetGoal(e.target.value)}
+					onChange={(e) => {
+						const v = e.target.value.replace(/[^0-9]/g, "");
+						setTargetGoal(v);
+					}}
 					style={styles.input}
 				/>
 			</label>
 
+			<div
+				style={{ marginTop: 4, marginBottom: 8, color: "#aaa", fontSize: 12 }}
+			>
+				Preview: ≈ {formattedGoal} ETH
+			</div>
+
 			<label>
 				Deadline (date)
 				<input
-					type="date"
+					type="datetime-local"
 					value={deadline}
 					onChange={(e) => setDeadline(e.target.value)}
 					style={styles.input}
