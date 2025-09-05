@@ -20,9 +20,10 @@ import type {
   BN,
   FunctionFragment,
   InvokeFunction,
+  StrSlice,
 } from 'fuels';
 
-import type { Option, Enum } from "./common";
+import type { Option, Enum, Vec } from "./common";
 
 export type IdentityInput = Enum<{ Address: AddressInput, ContractId: ContractIdInput }>;
 export type IdentityOutput = Enum<{ Address: AddressOutput, ContractId: ContractIdOutput }>;
@@ -40,6 +41,14 @@ const abi = {
   "encodingVersion": "1",
   "concreteTypes": [
     {
+      "type": "enum std::option::Option<struct Campaign>",
+      "concreteTypeId": "d5f54fe5baac91273de4a8e3b2616fc87ff810fcc8b41a97e7376a4211410456",
+      "metadataTypeId": 3,
+      "typeArguments": [
+        "90fb85ffe45316e79ed94349a5cdda52c44838216b06af30b10291d8491a5fa4"
+      ]
+    },
+    {
       "type": "enum std::option::Option<struct std::address::Address>",
       "concreteTypeId": "8f44be37f59226eedaa8ba576d6674575f420f34a03f5d452cb9886ef9d38214",
       "metadataTypeId": 3,
@@ -48,14 +57,26 @@ const abi = {
       ]
     },
     {
+      "type": "str",
+      "concreteTypeId": "8c25cb3686462e9a86d2883c5688a22fe738b0bbc85f458d2d2b5f3f667c6d5a"
+    },
+    {
       "type": "struct Campaign",
       "concreteTypeId": "90fb85ffe45316e79ed94349a5cdda52c44838216b06af30b10291d8491a5fa4",
-      "metadataTypeId": 5
+      "metadataTypeId": 6
     },
     {
       "type": "struct std::address::Address",
       "concreteTypeId": "f597b637c3b0f588fb8d7086c6f4735caa3122b85f0423b82e489f9bb58e2308",
-      "metadataTypeId": 6
+      "metadataTypeId": 7
+    },
+    {
+      "type": "struct std::vec::Vec<struct Campaign>",
+      "concreteTypeId": "93c635847738066a593c5848f2082face34f6f6637cd07487d39f1e2d615fa88",
+      "metadataTypeId": 10,
+      "typeArguments": [
+        "90fb85ffe45316e79ed94349a5cdda52c44838216b06af30b10291d8491a5fa4"
+      ]
     },
     {
       "type": "u64",
@@ -77,11 +98,11 @@ const abi = {
       "components": [
         {
           "name": "Address",
-          "typeId": 6
+          "typeId": 7
         },
         {
           "name": "ContractId",
-          "typeId": 7
+          "typeId": 8
         }
       ]
     },
@@ -107,8 +128,12 @@ const abi = {
       "metadataTypeId": 4
     },
     {
+      "type": "raw untyped ptr",
+      "metadataTypeId": 5
+    },
+    {
       "type": "struct Campaign",
-      "metadataTypeId": 5,
+      "metadataTypeId": 6,
       "components": [
         {
           "name": "id",
@@ -144,7 +169,7 @@ const abi = {
     },
     {
       "type": "struct std::address::Address",
-      "metadataTypeId": 6,
+      "metadataTypeId": 7,
       "components": [
         {
           "name": "bits",
@@ -154,16 +179,83 @@ const abi = {
     },
     {
       "type": "struct std::contract_id::ContractId",
-      "metadataTypeId": 7,
+      "metadataTypeId": 8,
       "components": [
         {
           "name": "bits",
           "typeId": 1
         }
       ]
+    },
+    {
+      "type": "struct std::vec::RawVec",
+      "metadataTypeId": 9,
+      "components": [
+        {
+          "name": "ptr",
+          "typeId": 5
+        },
+        {
+          "name": "cap",
+          "typeId": "1506e6f44c1d6291cdf46395a8e573276a4fa79e8ace3fc891e092ef32d1b0a0"
+        }
+      ],
+      "typeParameters": [
+        4
+      ]
+    },
+    {
+      "type": "struct std::vec::Vec",
+      "metadataTypeId": 10,
+      "components": [
+        {
+          "name": "buf",
+          "typeId": 9,
+          "typeArguments": [
+            {
+              "name": "",
+              "typeId": 4
+            }
+          ]
+        },
+        {
+          "name": "len",
+          "typeId": "1506e6f44c1d6291cdf46395a8e573276a4fa79e8ace3fc891e092ef32d1b0a0"
+        }
+      ],
+      "typeParameters": [
+        4
+      ]
     }
   ],
   "functions": [
+    {
+      "name": "contribute",
+      "inputs": [
+        {
+          "name": "id",
+          "concreteTypeId": "1506e6f44c1d6291cdf46395a8e573276a4fa79e8ace3fc891e092ef32d1b0a0"
+        },
+        {
+          "name": "amount",
+          "concreteTypeId": "1506e6f44c1d6291cdf46395a8e573276a4fa79e8ace3fc891e092ef32d1b0a0"
+        }
+      ],
+      "output": "1506e6f44c1d6291cdf46395a8e573276a4fa79e8ace3fc891e092ef32d1b0a0",
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read",
+            "write"
+          ]
+        },
+        {
+          "name": "payable",
+          "arguments": []
+        }
+      ]
+    },
     {
       "name": "create_campaign",
       "inputs": [
@@ -195,7 +287,7 @@ const abi = {
           "concreteTypeId": "1506e6f44c1d6291cdf46395a8e573276a4fa79e8ace3fc891e092ef32d1b0a0"
         }
       ],
-      "output": "90fb85ffe45316e79ed94349a5cdda52c44838216b06af30b10291d8491a5fa4",
+      "output": "d5f54fe5baac91273de4a8e3b2616fc87ff810fcc8b41a97e7376a4211410456",
       "attributes": [
         {
           "name": "storage",
@@ -248,9 +340,27 @@ const abi = {
           ]
         }
       ]
+    },
+    {
+      "name": "list_campaigns",
+      "inputs": [],
+      "output": "93c635847738066a593c5848f2082face34f6f6637cd07487d39f1e2d615fa88",
+      "attributes": [
+        {
+          "name": "storage",
+          "arguments": [
+            "read"
+          ]
+        }
+      ]
     }
   ],
-  "loggedTypes": [],
+  "loggedTypes": [
+    {
+      "logId": "10098701174489624218",
+      "concreteTypeId": "8c25cb3686462e9a86d2883c5688a22fe738b0bbc85f458d2d2b5f3f667c6d5a"
+    }
+  ],
   "messagesTypes": [],
   "configurables": [],
   "errorCodes": {}
@@ -273,11 +383,13 @@ export class ContractInterface extends Interface {
   }
 
   declare functions: {
+    contribute: FunctionFragment;
     create_campaign: FunctionFragment;
     get_campaign: FunctionFragment;
     get_campaign_count: FunctionFragment;
     get_campaign_owner_addr: FunctionFragment;
     get_next_id: FunctionFragment;
+    list_campaigns: FunctionFragment;
   };
 }
 
@@ -287,11 +399,13 @@ export class Contract extends __Contract {
 
   declare interface: ContractInterface;
   declare functions: {
+    contribute: InvokeFunction<[id: BigNumberish, amount: BigNumberish], BN>;
     create_campaign: InvokeFunction<[target_goal: BigNumberish, deadline: BigNumberish], BN>;
-    get_campaign: InvokeFunction<[id: BigNumberish], CampaignOutput>;
+    get_campaign: InvokeFunction<[id: BigNumberish], Option<CampaignOutput>>;
     get_campaign_count: InvokeFunction<[], BN>;
     get_campaign_owner_addr: InvokeFunction<[id: BigNumberish], Option<AddressOutput>>;
     get_next_id: InvokeFunction<[], BN>;
+    list_campaigns: InvokeFunction<[], Vec<CampaignOutput>>;
   };
 
   constructor(

@@ -1,165 +1,119 @@
-import { useEffect, useState } from "react";
-import {
-	useBalance,
-	useConnectUI,
-	useIsConnected,
-	useWallet,
-} from "@fuels/react";
-import { Contract } from "./sway-api";
-
-// Use Vite env for contract ID so we can switch per-network easily
-const CONTRACT_ID =
-	import.meta.env?.VITE_CONTRACT_ID ||
-	"0x0000000000000000000000000000000000000";
-// when developing sometimes its quickest to just put your contract_id here but dont forget to remove!
+import { useConnectUI, useIsConnected, useWallet } from "@fuels/react";
+import { useState } from "react";
+import { Link, Navigate, Route, Routes } from "react-router-dom";
+import { styles } from "./styles";
+import CreateCampaign from "./pages/CreateCampaign";
+import ListCampaigns from "./pages/ListCampaigns";
+import ShowCampaign from "./pages/ShowCampaign";
 
 export default function App() {
-	const [contract, setContract] = useState<Contract>();
-	const [targetGoal, setTargetGoal] = useState<string>("");
-	const [deadline, setDeadline] = useState<string>("");
-	const [createdId, setCreatedId] = useState<number | null>(null);
-	const [isCreating, setIsCreating] = useState(false);
 	const { connect, isConnecting } = useConnectUI();
 	const { isConnected } = useIsConnected();
 	const { wallet } = useWallet();
-	const { balance } = useBalance({
-		address: wallet?.address.toAddress(),
-	});
-
-	useEffect(() => {
-		if (isConnected && wallet) {
-			const swayContract = new Contract(CONTRACT_ID, wallet);
-			setContract(swayContract);
-		}
-	}, [isConnected, wallet]);
-
-	const handleCreateCampaign = async () => {
-		if (!contract) return alert("Contract not loaded");
-
-		const goal = Number(targetGoal);
-		const endMs = new Date(deadline).getTime();
-
-		if (!Number.isFinite(goal) || Number.isNaN(endMs)) {
-			return alert("Please enter valid numbers for goal and deadline.");
-		}
-
-		try {
-			setIsCreating(true);
-			const call = await contract.functions.create_campaign(goal, endMs).call();
-			const { value } = await call.waitForResult();
-			setCreatedId(value.toNumber());
-		} catch (error) {
-			console.error(error);
-			alert("Failed to create campaign. Check console for details.");
-		} finally {
-			setIsCreating(false);
-		}
-	};
+	const [menuOpen, setMenuOpen] = useState(false);
 
 	return (
 		<div style={styles.root}>
 			<div style={styles.container}>
-				{isConnected ? (
-					<>
-						<h3 style={styles.label}>Create Campaign</h3>
-
-						<label>
-							Target Goal (u64)
-							<input
-								type="number"
-								min="0"
-								value={targetGoal}
-								onChange={(e) => setTargetGoal(e.target.value)}
-								style={styles.input}
-							/>
-						</label>
-
-						<label>
-							Deadline (date)
-							<input
-								type="date"
-								value={deadline}
-								onChange={(e) => setDeadline(e.target.value)}
-								style={styles.input}
-							/>
-						</label>
-
-						{balance && balance.toNumber() === 0 ? (
-							<p>
-								Get testnet funds from the{" "}
-								<a
-									target="_blank"
-									rel="noopener noreferrer"
-									href={`https://faucet-testnet.fuel.network/?address=${wallet?.address.toAddress()}`}
-								>
-									Fuel Faucet
-								</a>{" "}
-								to create a campaign.
-							</p>
-						) : (
-							<button
-								onClick={handleCreateCampaign}
-								style={styles.button}
-								disabled={isCreating}
+				{/* Main menu */}
+				<div style={styles.menuBar}>
+					<div style={{ position: "relative" }}>
+						<button
+							style={{
+								...styles.link,
+								cursor: "pointer",
+								border: "none",
+								width: 210,
+							}}
+							onClick={() => setMenuOpen((o) => !o)}
+						>
+							<span>Main Menu</span>
+							<span
+								style={{
+									right: 10,
+									position: "absolute",
+									top: menuOpen ? 9 : -5,
+									fontSize: 26,
+									transform: menuOpen ? "rotate(180deg)" : "none",
+								}}
 							>
-								{isCreating ? "Creating…" : "Create Campaign"}
-							</button>
+								{" "}
+								⌄
+							</span>
+						</button>
+						{menuOpen && (
+							<div
+								style={{
+									position: "absolute",
+									top: "110%",
+									left: 0,
+									background: "#1a1a1a",
+									border: "1px solid #333",
+									borderRadius: 8,
+									minWidth: 200,
+									boxShadow: "0 8px 24px rgba(0,0,0,0.35)",
+									padding: 6,
+									zIndex: 20,
+								}}
+							>
+								<Link
+									to="/campaigns"
+									onClick={() => setMenuOpen(false)}
+									style={{
+										display: "block",
+										color: "#fff",
+										textDecoration: "none",
+										padding: "8px 10px",
+										borderRadius: 6,
+									}}
+								>
+									Show all campaigns
+								</Link>
+								<Link
+									to="/campaign/create"
+									onClick={() => setMenuOpen(false)}
+									style={{
+										display: "block",
+										color: "#fff",
+										textDecoration: "none",
+										padding: "8px 10px",
+										borderRadius: 6,
+									}}
+								>
+									Create new campaign
+								</Link>
+							</div>
 						)}
+					</div>
+				</div>
 
-						{createdId !== null && <p>Created campaign id: {createdId}</p>}
+				{/* Header */}
+				<header style={{ ...styles.header, justifyContent: "flex-end" } as any}>
+					{!isConnected && (
+						<button onClick={() => connect()} style={styles.button}>
+							{isConnecting ? "Connecting" : "Connect"}
+						</button>
+					)}
+				</header>
 
-						<p>Your Fuel Wallet address is:</p>
-						<p>{wallet?.address.toAddress()}</p>
-					</>
-				) : (
-					<button onClick={() => connect()} style={styles.button}>
-						{isConnecting ? "Connecting" : "Connect"}
-					</button>
+				<Routes>
+					<Route index element={<Navigate to="/campaign/create" replace />} />
+					<Route path="/campaign/create" element={<CreateCampaign />} />
+					<Route path="/campaigns" element={<ListCampaigns />} />
+					<Route path="/campaigns/:id/details" element={<ShowCampaign />} />
+					<Route
+						path="*"
+						element={<Navigate to="/campaign/create" replace />}
+					/>
+				</Routes>
+
+				{/* Footer */}
+				{isConnected && (
+					<div style={styles.footer as any}>
+						Connected: {wallet?.address.toAddress()}
+					</div>
 				)}
 			</div>
 		</div>
 	);
 }
-
-const styles = {
-	root: {
-		display: "grid",
-		placeItems: "center",
-		height: "100vh",
-		width: "100vw",
-		backgroundColor: "black",
-	} as React.CSSProperties,
-	container: {
-		color: "#ffffffec",
-		display: "flex",
-		flexDirection: "column",
-		alignItems: "center",
-	} as React.CSSProperties,
-	label: {
-		fontSize: "28px",
-	},
-	button: {
-		borderRadius: "8px",
-		margin: "24px 0px",
-		backgroundColor: "#707070",
-		fontSize: "16px",
-		color: "#ffffffec",
-		border: "none",
-		outline: "none",
-		height: "60px",
-		padding: "0 1rem",
-		cursor: "pointer",
-	},
-	input: {
-		marginTop: "8px",
-		marginBottom: "16px",
-		height: "40px",
-		borderRadius: "6px",
-		padding: "0 0.5rem",
-		border: "1px solid #444",
-		backgroundColor: "#1a1a1a",
-		color: "#ffffffec",
-		width: "280px",
-		display: "block",
-	},
-};
